@@ -229,6 +229,15 @@ Frequently Asked Questions
 
    Build the docker image with docker compose, **not** the gserve binary.
 
+#. HBase build is broken
+
+   Unfortunatley, HBase does not maintain a stable URL to the latest version of the software and we have to periodically migrate to newer versions.
+
+   Try changing the variable HBASE_VERSION in hbase/Dockerfile to a more recent version. You can find a list of available versions here: http://apache.lauf-forum.at/hbase/stable/
+
+   Also, see this discussion on Auditorium: https://auditorium.inf.tu-dresden.de/en/questions/4075
+   
+
 
 Optional
 --------
