@@ -1,11 +1,14 @@
 .. |form| image:: ./image/form.png
-   :width: 300px
+   :width: 300
+   :alt: Input Form
 
 .. |output| image:: ./image/output.png
-   :width: 300px
+   :width: 300
+   :alt: Sample Output
 
 .. |architecture| image:: ./image/architecture.png
-   :width: 600px
+   :width: 600
+   :alt: General Architecture
 
 
 Systems Engineering 2 - Assignment 1
