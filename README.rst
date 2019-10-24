@@ -1,8 +1,11 @@
 .. |form| image:: ./image/form.png
-   :height: 400pt
+   :width: 500pt
 
 .. |output| image:: ./image/output.png
-   :height: 400pt
+   :width: 500pt
+
+.. |architecture| image:: ./image/architecture.png
+   :width: 600pt
 
 
 Systems Engineering 2 - Assignment 1
@@ -12,23 +15,25 @@ Organization
 ------------
 
 * **deadline:** TBA
-* you will have two opportunities to test your solution before the deadline. We will test all repositories on *November 30th, 2018* and *December 12th, 2018* and publish the results on the course website.
 
-   * mind that the results of these tests are not graded. Only the final result matters.
-   * if your solution fails a test, you will *not* receive a detailed explanation of the reasons why it failed. Your task is to figure it out on your own.
+* You will have two opportunities to test your solution before the deadline.
+* We will test all repositories on *TBA* and *TBA* and publish the results on the course website.
+* The results of these intdermideate tests are not graded. Only the final result matters.
+* If your solution fails a test, you will *not* receive a detailed explanation of the reasons why it failed.
+* Your task is to figure it out on your own.
 
-* git usage is mandatory (multiple commits with meaningful messages)
+* Git usage is mandatory (multiple commits with meaningful messages)
 * Go is mandatory
-* you have to work alone
-* don't share code
-* ask questions in the `Auditorium <https://auditorium.inf.tu-dresden.de/en/groups/110631002>`_
+* You have to work alone
+* Don't share code, if so you will imeadeatly fail the assignment.
+* Ask questions in the `Auditorium <https://auditorium.inf.tu-dresden.de/en/groups/110631002>`_
 
 
 Task description
 ----------------
 
-You are required to develop an online **document library**.
-Users are presented with an input form, where they can submit *documents* (e.g., books, poems, recipes) along with *metadata* (e.g., author, mime type, ISBN).
+Users of an online **document library** are presented with an input form, where they can submit *documents*
+(e.g., books, poems, recipes) along with *metadata* (e.g., author, mime type, ISBN).
 For the sake of simplicity, they can view *all* stored documents on a single page.
 
 +------------+-----------------+
@@ -37,10 +42,34 @@ For the sake of simplicity, they can view *all* stored documents on a single pag
 | input form | output sample   |
 +------------+-----------------+
 
-Hence, create an application with the following architecture.
+You are required to develop the online **document library** consisting of multiple services that are partially already existing.
+For some services you will have to write Dockerfiles while for other services you will have to write code.
+The complete project is setup using individual Dockerfile and Docker-Compose to start the services.
+Hence, you are to create an application with the following architecture.
+
++----------------+
+| |architecture| |
++----------------+
+
 Don't worry, in this repository you can find some Makefiles, Dockerfiles, configuration files and source code to get you started.
 
-.. figure:: ./image/architecture.png
+Aspects that you need to learn to succeed
+-----------------------------------------
+
+* How to use Git
+* What in Docker, how does it work
+* How to write Dockerfiles
+* What is Docker-Compose and how does it work
+* How to write Docker-Compose files
+* How to setup networks in Docker
+* How to mount volumes in Dockerfile
+* Programming in Go
+
+
+Components
+----------
+
+In the following, the text provides an overview of the different components and the respective tasks that you have to fulfill.
 
 Nginx
 ~~~~~
@@ -48,21 +77,21 @@ Nginx
 Nginx is a web server that delivers static content in our architecture.
 Static content comprises the landing page (index.html), JavaScript, css and font files located in ``nginx/www``.
 
-1. complete the ``nginx/Dockerfile``
+1. Edit and complete the ``nginx/Dockerfile``
 
-   a) upgrade the system
-   #) install nginx
-   #) copy ``nginx/nginx.conf`` from host to container's ``/etc/nginx/nginx.conf``
-   #) use port 80 in the container
-   #) run nginx on container startup
+   a) Upgrade the system
+   #) Install nginx
+   #) Copy ``nginx/nginx.conf`` from host to container's ``/etc/nginx/nginx.conf``
+   #) Use port 80 in the container
+   #) Run nginx on container startup
 
-#. in docker-compose
+#. Edit the central docker-compose file
 
-   a) build the image
-   #) assign nginx to the ``se_backend`` network
-   #) mount the host directory ``nginx/www`` to ``/var/www/nginx`` in the container
+   a) Build the image using the Dockerfile for nginx
+   #) Assign nginx to the ``se_backend`` network
+   #) Mount the host directory ``nginx/www`` to ``/var/www/nginx`` in the container
 
-#. verify your setup (it should display the landing page)
+#. Verify your setup (it should display the landing page)
 
 HBase
 ~~~~~
@@ -102,7 +131,7 @@ The HBase image above already contains a ZooKeeper installation.
 
    1. you are allowed to use the `go-zookeeper <https://github.com/samuel/go-zookeeper>`_ library
 
-grproxy
+Grproxy
 ~~~~~~~
 
 This is the first service/server you have to write by yourself.
@@ -120,7 +149,7 @@ Discover running gserve instances with the help of ZooKeeper and forward ``libra
    1. you are allowed to use `httputil.ReverseProxy <https://golang.org/pkg/net/http/httputil/>`_
    2. you don't need to handle the case where an instance registered to ZooKeeper doesn't reply
 
-gserve
+Gserve
 ~~~~~~
 
 Gserve is the second service you need to implement, and it serves basically two purposes.
@@ -146,6 +175,7 @@ Hints
 * Start small, don't try to solve every problem at once.
 * Test your components against single Docker containers (e.g., gserve with HBase container), and integrate them into docker-compose later on.
 * The developer tools of your browser may help you to capture and analyse requests and responses.
+
 
 Links
 -----
@@ -246,4 +276,4 @@ You had a lot of fun and want more?
 No problem!
 Select a topic you're interested in, and enhance any of the components.
 For instance, query single documents or rows, replace nginx with a web server written by yourself, improve the error handling in Grproxy, write test cases or in the worst case just beautify the HTML/CSS.
-But keep in mind: your application *shall still conform to the task description*.
+But keep in mind: your application *has to conform to the task description*.
