@@ -1,13 +1,10 @@
 .. |form| image:: ./image/form.png
-   :width: 300
    :alt: Input Form
 
 .. |output| image:: ./image/output.png
-   :width: 300
    :alt: Sample Output
 
 .. |architecture| image:: ./image/architecture.png
-   :width: 600
    :alt: General Architecture
 
 
