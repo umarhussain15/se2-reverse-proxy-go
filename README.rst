@@ -74,11 +74,21 @@ Links
 -----
 
 * `Docker Docs <https://docs.docker.com/>`_
+* `Docker Compose getting started <https://docs.docker.com/compose/gettingstarted/>`_
 * `Docker Compose file reference <https://docs.docker.com/compose/compose-file/>`_
 * `Apache HBase Reference Guide <http://hbase.apache.org/book.html>`_
 * `ZooKeeper Documentation <http://zookeeper.apache.org/doc/trunk/>`_
 * `Go Documentation <https://golang.org/doc/>`_
 * `Pro Git <https://git-scm.com/book/en/v2>`_
+
+Prerequisites
+-------------
+
+* Ensure that you have git intalled
+* Write, compile and run a simple ```hello world``` program in Go
+* Ensure that ```docker run hello-world``` works
+* Complete the *Docker Compose getting started* tutorial
+
 
 
 Components
@@ -137,7 +147,6 @@ Deviating from the architecture image, you don't need to create an extra ZooKeep
 
 1. Add an alias to the hbase section in the docker-compose file such that other containers can connect to it by referring to the name ``zookeeper``
 
-* You are allowed to use the `go-zookeeper <https://github.com/samuel/go-zookeeper>`_ library
 
 Grproxy
 ~~~~~~~
@@ -156,6 +165,7 @@ Discover running gserve instances with the help of teh ZooKeeper service and for
 
 * You are allowed to use `httputil.ReverseProxy <https://golang.org/pkg/net/http/httputil/>`_
 * You don't need to handle the case where an instance registered to ZooKeeper doesn't reply
+* You are allowed to use the `go-zookeeper <https://github.com/samuel/go-zookeeper>`_ library
 
 
 Gserve
@@ -177,9 +187,10 @@ It only receives requests from grproxy after it subscribed to ZooKeeper, and aut
    #) Make sure, that both instances start after hbase and grproxy
    #) Provide the names of the instances (gserve1, gserve2) via environment variables
 
-* For interacting with Hbase:
+* For interacting with Hbase/ZooKeeper:
    * ``gserve/src/gserve/HbaseJSON.go`` contains helpers to convert data from frontend JSON via Go types to base64-encoded HBase JSON and back
    * You might want to use the (Un)marshal functions from the `encoding/JSON package <https://golang.org/pkg/encoding/json/>`_
+   * You are allowed to use the `go-zookeeper <https://github.com/samuel/go-zookeeper>`_ library
 
 
 Hints
