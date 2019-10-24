@@ -1,11 +1,11 @@
 .. |form| image:: ./image/form.png
-   :width: 300pt
+   :width: 300px
 
 .. |output| image:: ./image/output.png
-   :width: 300pt
+   :width: 300px
 
 .. |architecture| image:: ./image/architecture.png
-   :width: 600pt
+   :width: 600px
 
 
 Systems Engineering 2 - Assignment 1
