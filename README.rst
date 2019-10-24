@@ -18,7 +18,7 @@ Organization
 
 * You will have two opportunities to test your solution before the deadline.
 * We will test all repositories on *TBA* and *TBA* and publish the results on the course website.
-* The results of these intdermideate tests are not graded. Only the final result matters.
+* The results of these intermediate tests are not graded. Only the final result matters.
 * If your solution fails a test, you will *not* receive a detailed explanation of the reasons why it failed.
 * Your task is to figure it out on your own.
 
