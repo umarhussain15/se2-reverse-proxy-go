@@ -25,7 +25,7 @@ Organization
 * Git usage is mandatory (multiple commits with meaningful messages)
 * Go is mandatory
 * You have to work alone
-* Don't share code, if so you will imeadeatly fail the assignment.
+* Don't share code, if so you will immediately fail the assignment.
 * Ask questions in the `Auditorium <https://auditorium.inf.tu-dresden.de/en/groups/110631002>`_
 
 
