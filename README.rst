@@ -288,3 +288,8 @@ No problem!
 Select a topic you're interested in, and enhance any of the components.
 For instance, query single documents or rows, replace nginx with a web server written by yourself, improve the error handling in Grproxy, write test cases or in the worst case just beautify the HTML/CSS.
 But keep in mind: your application *has to conform to the task description*.
+
+Hint
+----
+
+To fulfill this assignment you need to at least adapt one docker-compose file, four Dockerfiles, and two Go files.
