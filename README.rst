@@ -14,20 +14,18 @@ Systems Engineering 2 - Assignment 1
 Organization
 ------------
 
-* **deadline:** TBA
+* **Hard deadline: 15.12.2019** 
 
-* You will have two opportunities to test your solution before the deadline.
-* We will test all repositories on *TBA* and *TBA* and publish the results on the course website.
+* Your solution will be tested at least three times per week in the time before the deadline.
+* If your solution fails one or multiple tests, you will *not* receive a detailed explanation of the reasons why it failed.
+* Your task is to figure it out on your own. However, we will provide information about the current state of your solution.
 * The results of these intermediate tests are not graded. Only the final result matters.
-* If your solution fails a test, you will *not* receive a detailed explanation of the reasons why it failed.
-* Your task is to figure it out on your own.
-
-* Git usage is mandatory (multiple commits with meaningful messages)
-* Go is mandatory
+* We will finally evaluate all repositories on *15.12.2019*.
+* Usage of Git is mandatory (multiple commits with meaningful messages)
+* GO is mandatory
 * You have to work alone
 * Don't share code, if so you will immediately fail the assignment.
 * Ask questions in the `Auditorium <https://auditorium.inf.tu-dresden.de/en/groups/110631002>`_
-
 
 Task description
 ----------------
@@ -279,7 +277,6 @@ Frequently Asked Questions
    Also, see this discussion on Auditorium: https://auditorium.inf.tu-dresden.de/en/questions/4075
    
 
-
 Optional
 --------
 
@@ -292,4 +289,5 @@ But keep in mind: your application *has to conform to the task description*.
 Hint
 ----
 
-To fulfill this assignment you need to at least adapt one docker-compose file, four Dockerfiles, and two Go files.
+* To fulfill this assignment you need to at least adapt one docker-compose file, four Dockerfiles, and two Go files.
+* The system always tries to execute *docker-compose up*, ensure that this always succeeds.
