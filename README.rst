@@ -15,7 +15,7 @@ Organization
 ------------
 
 * **Hard deadline: 15.12.2019** 
-
+* You have to fork this repositary and adapt the code in your forked repositry.
 * Your solution will be tested at least three times per week in the time before the deadline.
 * If your solution fails one or multiple tests, you will *not* receive a detailed explanation of the reasons why it failed.
 * Your task is to figure it out on your own. However, we will provide information about the current state of your solution.
@@ -83,6 +83,7 @@ Prerequisites
 * Write, compile and run a simple ```hello world``` program in Go
 * Ensure that ```docker run hello-world``` works
 * Complete the *Docker Compose getting started* tutorial
+* Fork this repositary
 
 
 
