@@ -14,7 +14,9 @@ services:
         hbase:
           build: hbase
           networks:
-            - se_backend
+            se_backend:
+              aliases:
+                - zookeeper
         gserve1:
           build: gserve
           networks:
