@@ -7,3 +7,7 @@ services:
         gserve2:
 
 networks:
+  se_backend:
+    driver: bridge
+  se_frontend:
+    driver: bridge
