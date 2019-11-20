@@ -1,19 +1,24 @@
 version: '2'
 services:
         nginx:
+          build: nginx
           networks:
             - se_backend
         grproxy:
+          build: grproxy
           networks:
             - se_frontend
             - se_backend
         hbase:
+          build: hbase
           networks:
             - se_backend
         gserve1:
+          build: gserve
           networks:
             - se_backend
         gserve2:
+          build: gserve
           networks:
             - se_backend
 
