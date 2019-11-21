@@ -6,6 +6,8 @@ services:
             - ./nginx/www:/var/www/nginx
           networks:
             - se_backend
+          ports:
+            - "80:80"
         grproxy:
           build: grproxy
           networks:
