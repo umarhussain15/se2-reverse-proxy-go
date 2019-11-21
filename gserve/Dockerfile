@@ -14,7 +14,7 @@ COPY src/gserve/ .
 RUN go get -d -v
 
 # build current folder and store executable file.
-RUN go build -o /go/bin/gserve
+RUN CGO_ENABLED=0 GOOS=linux go build -o /go/bin/gserve
 
 # STEP 2: build container with executable with scratch as base.
 FROM scratch
