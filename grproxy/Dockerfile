@@ -21,5 +21,6 @@ FROM scratch
 # Copy our static executable.
 COPY --from=builder /go/bin/grproxy /go/bin/grproxy
 
+EXPOSE $PORT
 # set executable as entry point during container startup.
 ENTRYPOINT ["/go/bin/grproxy"]
