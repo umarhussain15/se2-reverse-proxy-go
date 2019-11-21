@@ -6,13 +6,18 @@ services:
             - ./nginx/www:/var/www/nginx
           networks:
             - se_backend
-          ports:
-            - "80:80"
+#          ports:
+#            - "80:80"
         grproxy:
           build: grproxy
+          environment:
+            PORT: "8080"
+            STATIC_CONTENT_HOST: "nginx"
           networks:
             - se_frontend
             - se_backend
+          ports:
+            - "80:8080"
         hbase:
           build: hbase
           networks:
