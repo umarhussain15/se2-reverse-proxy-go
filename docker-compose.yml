@@ -25,13 +25,18 @@ services:
             - ID=gserve1
           networks:
             - se_backend
+          depends_on:
+            - hbase
+            - grproxy
         gserve2:
           build: gserve
           environment:
             - ID=gserve2
           networks:
             - se_backend
-
+          depends_on:
+            - hbase
+            - grproxy
 networks:
   se_backend:
     driver: bridge
