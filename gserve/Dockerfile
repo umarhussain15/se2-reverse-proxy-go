@@ -16,13 +16,23 @@ RUN go get -d -v
 # build current folder and store executable file.
 RUN CGO_ENABLED=0 GOOS=linux go build -o /go/bin/gserve
 
+# copy templates folder from host.
+COPY src/templates /temp/templates
+
 # STEP 2: build container with executable with scratch as base.
 FROM scratch
+
 # Copy our static executable.
 COPY --from=builder /go/bin/gserve /go/bin/gserve
 
+# copy templates folder which will contain html file used by gserve.
+COPY --from=builder /temp/templates /templates
+
 # default value if not provided during run
 ENV ID "gserve_default"
+
+# provide tempalte folder path since go will use absolute path to parse.
+ENV TEMPLATE_FOLDER "/templates"
 
 # set executable as entry point during container startup.
 ENTRYPOINT ["/go/bin/gserve"]
