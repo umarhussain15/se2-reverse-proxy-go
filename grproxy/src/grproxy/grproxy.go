@@ -26,6 +26,8 @@ func proxyHandler(res http.ResponseWriter, req *http.Request) {
 func dynamicContentProxy(res http.ResponseWriter, req *http.Request) {
 	log.Printf("dynamic request handler %s", req.URL.Path)
 	//TODO: forward request to gserve instances based on round robin load balancing
+	serverUrl, _ := url.Parse("http://gserve1:8081")
+	httputil.NewSingleHostReverseProxy(serverUrl).ServeHTTP(res, req)
 }
 
 // staticContentProxy will use reverse proxy with host url of our nginx instance. nginx will respond to the request and

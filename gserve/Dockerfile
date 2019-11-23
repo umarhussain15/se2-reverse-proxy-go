@@ -34,5 +34,7 @@ ENV ID "gserve_default"
 # provide tempalte folder path since go will use absolute path to parse.
 ENV TEMPLATE_FOLDER "/templates"
 
+EXPOSE $PORT
+
 # set executable as entry point during container startup.
 ENTRYPOINT ["/go/bin/gserve"]

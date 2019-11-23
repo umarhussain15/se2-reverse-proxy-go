@@ -27,7 +27,9 @@ services:
         gserve1:
           build: gserve
           environment:
+            - HBASE_HOST=hbase:8080
             - ID=gserve1
+            - PORT=8081
           networks:
             - se_backend
           depends_on:
