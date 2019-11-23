@@ -13,6 +13,7 @@ services:
           environment:
             PORT: "8080"
             STATIC_CONTENT_HOST: "nginx"
+            ZOOKEEPER_HOST: "zookeeper"
           networks:
             - se_frontend
             - se_backend
@@ -27,9 +28,10 @@ services:
         gserve1:
           build: gserve
           environment:
-            - HBASE_HOST=hbase:8080
             - ID=gserve1
-            - PORT=8081
+            - PORT=80
+            - HBASE_HOST=hbase:8080
+            - ZOOKEEPER_HOST=zookeeper
           networks:
             - se_backend
           depends_on:
@@ -39,6 +41,9 @@ services:
           build: gserve
           environment:
             - ID=gserve2
+            - PORT=80
+            - HBASE_HOST=hbase:8080
+            - ZOOKEEPER_HOST=zookeeper
           networks:
             - se_backend
           depends_on:
