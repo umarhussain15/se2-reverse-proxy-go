@@ -1,10 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>SE2 Library</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <title>SE2 Assignment 1: Online Library</title>
+
+    <link rel="stylesheet" href="css/icons.css">
+    <link rel="stylesheet" href="css/materialize.min.css">
+
+    <script src="js/jquery-2.2.4.min.js"></script>
+    <script src="js/materialize.min.js"></script>
 </head>
 <body>
+<div class="container">
+    <div>
+        <h1>SE2 Library</h1>
+    </div>
+    {{ range $row := .Rows }}
+        <div class="row">
+            <!-- ID -->
+            <div class="row">
+                <div>
+                    <h3>{{$row.Name}}</h3>
+                    <h4>document</h4>
+                </div>
+            </div>
+            {{ range $doc := $row.Docs }}
+                <!-- Document -->
+                <div class="row">
+                    <div class="col s5">
+                        <p><b>{{$doc.Name}}</b></p>
+                    </div>
+                    <div class="col s6">
+                        <p>{{$doc.Value}}</p>
+                    </div>
+                </div>
+            {{end}}
+            <!-- Metadata -->
+            <div class="row">
+                <div>
+                    <h4>metadata</h4>
+                </div>
+            </div>
+            {{ range $meta := $row.Metas }}
+                <div class="row">
+                    <div class="col s5">
+                        <p><b>{{$meta.Name}}</b></p>
+                    </div>
+                    <div class="col s6">
+                        <p>{{$meta.Value}}</p>
+                    </div>
+                </div>
+            {{end}}
+        </div>
+    {{end}}
+</div>
 
 proudly served by {{.Server}}
 </body>
