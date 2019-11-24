@@ -155,7 +155,11 @@ func handleRequests(res http.ResponseWriter, req *http.Request) {
 
 		// assuming that correct data is sent in request convert it to RowsType
 		err := json.NewDecoder(req.Body).Decode(&rowData)
-
+		if err != nil {
+			log.Println(err)
+			res.WriteHeader(http.StatusBadRequest)
+			return
+		}
 		// encode the values to base64 for sending to hbase
 		encodedRowData := rowData.encode()
 
@@ -164,6 +168,7 @@ func handleRequests(res http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			log.Println(err)
 			res.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 
 		// create post request to hbase instance for storing this data.
@@ -172,6 +177,7 @@ func handleRequests(res http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			log.Println(err)
 			res.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 		request.Header.Set("Content-Type", "application/json")
 		request.Header.Set("Accept", "application/json")
@@ -182,10 +188,12 @@ func handleRequests(res http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			log.Println(err)
 			res.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 		//log.Println(response.Status, response.StatusCode)
 		res.WriteHeader(http.StatusCreated)
 	default:
+		log.Println("method not allowed: ", req.Method)
 		res.WriteHeader(http.StatusMethodNotAllowed)
 	}
 }
