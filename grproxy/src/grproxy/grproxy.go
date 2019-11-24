@@ -79,7 +79,7 @@ func connectWithOptions() (*zk.Conn, <-chan zk.Event) {
 	return conn, events
 }
 
-func getGServeHosts(conn *zk.Conn) {
+func createGServeWatchNode(conn *zk.Conn) {
 
 	_, err := conn.Create(zooKeeperReadNode, []byte{}, 0, zk.WorldACL(zk.PermAll))
 
@@ -88,10 +88,10 @@ func getGServeHosts(conn *zk.Conn) {
 	} else {
 		log.Println("created /gserve node in zookeeper")
 	}
-	watchChildren(conn)
+	//watchChildren(conn)
 }
 
-func watchChildren(conn *zk.Conn) {
+func watchGServeNodeChildren(conn *zk.Conn) {
 	nodes, _, events, err := conn.ChildrenW(zooKeeperReadNode)
 	if err != nil {
 		log.Println(err)
@@ -104,7 +104,7 @@ func watchChildren(conn *zk.Conn) {
 			case event := <-events:
 				if event.Type == zk.EventNodeChildrenChanged {
 					log.Printf(event.Path, event)
-					go watchChildren(conn)
+					go watchGServeNodeChildren(conn)
 					return
 				}
 			}
@@ -139,7 +139,10 @@ func main() {
 	NginxHostPath = "http://" + os.Getenv("STATIC_CONTENT_HOST")
 
 	conn, _ := connectWithOptions()
-	go getGServeHosts(conn)
+	createGServeWatchNode(conn)
+
+	// watch in separate routine
+	go watchGServeNodeChildren(conn)
 	// all the request to root url will be handled by proxyHandler. pattern parameter is not using any regex
 	http.HandleFunc("/", proxyHandler)
 
