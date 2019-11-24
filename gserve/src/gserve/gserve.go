@@ -24,7 +24,7 @@ var serverId = os.Getenv("ID")
 var port = os.Getenv("PORT")
 
 var zooKeeperHost = os.Getenv("ZOOKEEPER_HOST")
-
+var zooKeeperWatchNode = "/gserve"
 var hBaseClientAddress = "http://" + os.Getenv("HBASE_HOST")
 var hBaseLibraryTable = hBaseClientAddress + "/se2:library"
 
@@ -205,25 +205,42 @@ func connectWithOptions() (*zk.Conn, <-chan zk.Event) {
 	return conn, events
 }
 
+// waitForGServeWatchNode will wait until node in zookeeper is created (event received). This will ensure that server
+// waits for zookeeper to publish its url and then start http server
+func waitForGServeWatchNode(conn *zk.Conn) {
+	present, _, events, err := conn.ExistsW(zooKeeperWatchNode)
+
+	if err != nil {
+		log.Println("error exists check: ", err)
+	}
+
+	if present {
+		return
+	}
+	for {
+		select {
+		case event := <-events:
+			if event.Type == zk.EventNodeCreated {
+				log.Printf(event.Path, event)
+				return
+			}
+
+		}
+	}
+}
+
 // publishServerDetails sends the details to zookeeper for the current instance. It will first try to create /gserve
 // parent node, then publish the host url against id of this server under /gserve.
 func publishServerDetails(conn *zk.Conn, myUrl string) {
 	log.Println("publishing gserve host details to zookeeper")
 
-	_, err := conn.Create("/gserve", []byte{}, 0, zk.WorldACL(zk.PermAll))
-	if err != nil {
-		log.Println("error creating /gserve", err)
-	} else {
-		log.Println("created /gserve node in zookeeper")
-	}
-
-	var publishNode = "/gserve/" + serverId
-	_, err = conn.Create(publishNode, []byte(myUrl), zk.FlagEphemeral, zk.WorldACL(zk.PermRead))
+	var publishNode = zooKeeperWatchNode + "/" + serverId
+	_, err := conn.Create(publishNode, []byte(myUrl), zk.FlagEphemeral, zk.WorldACL(zk.PermRead))
 
 	if err != nil {
 		log.Println("error publishing connection", err)
 	} else {
-		log.Println("hot details published to " + publishNode)
+		log.Println("host details published to " + publishNode)
 	}
 
 }
@@ -231,7 +248,6 @@ func publishServerDetails(conn *zk.Conn, myUrl string) {
 // serverAddress reads environment for port on which proxy server be listening.
 // It returns address string with no host name and port from env.
 func serverAddress() string {
-	port := os.Getenv("PORT")
 	return ":" + port
 }
 
@@ -241,6 +257,7 @@ func main() {
 	// prepare url for this instance and publish it.
 	myUrl := "http://" + serverId + ":" + port
 	conn, _ := connectWithOptions()
+	waitForGServeWatchNode(conn)
 	publishServerDetails(conn, myUrl)
 
 	// all the request to root url will be handled by proxyHandler. pattern parameter is not using any regex
