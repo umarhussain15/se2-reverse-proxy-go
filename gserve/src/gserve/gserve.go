@@ -54,148 +54,161 @@ type ResDoc struct {
 // via Hbase REST API. For GET method it will get all data from Hbase and add it to a html template file with server
 // signature line at the bottom.
 func handleRequests(res http.ResponseWriter, req *http.Request) {
-
+	log.Println(req.Method, req.URL.Path)
 	switch req.Method {
 	case http.MethodGet:
-
-		// set content type header for response as html
-		res.Header().Set("Content-Type", "text/html; charset=utf-8")
-
-		// parse the html file
-		t, err := template.ParseFiles(filepath.Join(os.Getenv("TEMPLATE_FOLDER"), "/getTemplate.html"))
-		if err != nil {
-			log.Println(err)
-			_, _ = fmt.Fprintf(res, "Unable to load template")
-			return
-		}
-
-		// create scanner for the library table
-		scannerAddress := hBaseLibraryTable + "/scanner"
-		request, err := http.NewRequest("PUT", scannerAddress, bytes.NewBuffer([]byte(`<Scanner batch="10"/>`)))
-		if err != nil {
-			log.Println("error creating scanner request", err)
-		}
-		// set content type for body
-		request.Header.Set("Content-Type", "text/xml")
-
-		// try the request.
-		response, err := netClient.Do(request)
-		if err != nil {
-			log.Println("error during request", err)
-		}
-
-		// read scanner url from response header.
-		scanner := response.Header.Get("Location")
-		//log.Println(response.Header, scanner)
-
-		// create request for scanner url
-		request, err = http.NewRequest("GET", scanner, nil)
-		if err != nil {
-			log.Println("error creating read scanner request", err)
-		}
-		// set content type we need from scanner
-		request.Header.Set("Accept", "application/json")
-
-		response, err = netClient.Do(request)
-		if err != nil {
-			log.Println("scanner request error", err)
-		}
-
-		var encodedRowData EncRowsType
-		// decode the response body to json and unmarshal it to encoded row type
-		err = json.NewDecoder(response.Body).Decode(&encodedRowData)
-		if err != nil {
-			log.Println("json decoding error", err)
-		}
-		// decode the result to decode base64 back to normal string
-		rowData, err := encodedRowData.decode()
-		if err != nil {
-			log.Println("base64 decoding error", err)
-		}
-		//log.Println(rowData)
-
-		// convert the scanner results to data format which will be used in html template.
-		var rows []ResRow
-		for _, row := range rowData.Row {
-
-			resRow := ResRow{
-				Name: row.Key,
-			}
-			for _, cell := range row.Cell {
-				if strings.HasPrefix(cell.Column, "document") {
-					doc := ResDoc{
-						Name:  strings.Split(cell.Column, ":")[1],
-						Value: cell.Value,
-					}
-					resRow.Docs = append(resRow.Docs, doc)
-				} else {
-					meta := ResMeta{
-						Name:  strings.Split(cell.Column, ":")[1],
-						Value: cell.Value,
-					}
-					resRow.Metas = append(resRow.Metas, meta)
-				}
-			}
-
-			rows = append(rows, resRow)
-		}
-
-		// create data for the template
-		result := GetResponse{Server: serverId, Rows: rows}
-		// add data to template and send response.
-		err = t.Execute(res, result)
-		if err != nil {
-			log.Println(err)
-		}
+		processGetRequest(res, req)
 		break
 	case http.MethodPost:
-		now := time.Now()
-		//timestamp := uint64(now.Unix())
-		var rowData RowsType
-
-		// assuming that correct data is sent in request convert it to RowsType
-		err := json.NewDecoder(req.Body).Decode(&rowData)
-		if err != nil {
-			log.Println(err)
-			res.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		// encode the values to base64 for sending to hbase
-		encodedRowData := rowData.encode()
-
-		// Marshal the data to json
-		requestBody, err := json.Marshal(encodedRowData)
-		if err != nil {
-			log.Println(err)
-			res.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		// create post request to hbase instance for storing this data.
-		rowAddress := hBaseLibraryTable + "/" + strconv.FormatInt(now.Unix(), 10)
-		request, err := http.NewRequest("POST", rowAddress, bytes.NewBuffer(requestBody))
-		if err != nil {
-			log.Println(err)
-			res.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		request.Header.Set("Content-Type", "application/json")
-		request.Header.Set("Accept", "application/json")
-
-		// send request to hbase
-		_, err = netClient.Do(request)
-
-		if err != nil {
-			log.Println(err)
-			res.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		//log.Println(response.Status, response.StatusCode)
-		res.WriteHeader(http.StatusCreated)
+		processPostRequest(res, req)
 	default:
 		log.Println("method not allowed: ", req.Method)
 		res.WriteHeader(http.StatusMethodNotAllowed)
 	}
+}
+
+func processGetRequest(res http.ResponseWriter, req *http.Request) {
+	// set content type header for response as html
+	res.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	// create scanner for the library table
+	scannerAddress := hBaseLibraryTable + "/scanner"
+	request, err := http.NewRequest("PUT", scannerAddress, bytes.NewBuffer([]byte(`<Scanner maxVersions="1"/>`)))
+	if err != nil {
+		log.Println("error creating scanner request", err)
+	}
+	// set content type for request body
+	request.Header.Set("Content-Type", "text/xml")
+
+	// try the request.
+	response, err := netClient.Do(request)
+	if err != nil {
+		log.Println("error during request", err)
+	}
+
+	// read scanner url from response header.
+	scanner := response.Header.Get("Location")
+	//log.Println(response.Header, scanner)
+
+	// create request for scanner url
+	request, err = http.NewRequest("GET", scanner, nil)
+	if err != nil {
+		log.Println("error creating read scanner request", err)
+	}
+	// set content type we need from scanner
+	request.Header.Set("Accept", "application/json")
+
+	response, err = netClient.Do(request)
+	if err != nil {
+		log.Println("scanner request error", err)
+	}
+
+	var encodedRowData EncRowsType
+	// decode the response body to json and unmarshal it to encoded row type
+	err = json.NewDecoder(response.Body).Decode(&encodedRowData)
+	if err != nil {
+		log.Println("scanner read json decoding error: ", err)
+	}
+	// decode the result to decode base64 back to normal string
+	rowData, err := encodedRowData.decode()
+	if err != nil {
+		log.Println("base64 decoding error", err)
+	}
+	//log.Println(rowData)
+
+	// convert the scanner results to data format which will be used in html template.
+	var rows []ResRow
+	for _, row := range rowData.Row {
+
+		resRow := ResRow{
+			Name: row.Key,
+		}
+		for _, cell := range row.Cell {
+			if strings.HasPrefix(cell.Column, "document") {
+				doc := ResDoc{
+					Name:  strings.Split(cell.Column, ":")[1],
+					Value: cell.Value,
+				}
+				resRow.Docs = append(resRow.Docs, doc)
+			} else {
+				meta := ResMeta{
+					Name:  strings.Split(cell.Column, ":")[1],
+					Value: cell.Value,
+				}
+				resRow.Metas = append(resRow.Metas, meta)
+			}
+		}
+
+		rows = append(rows, resRow)
+	}
+
+	// create data for the template
+	result := GetResponse{Server: serverId, Rows: rows}
+
+	// parse the html file
+	t, err := template.ParseFiles(filepath.Join(os.Getenv("TEMPLATE_FOLDER"), "/getTemplate.html"))
+	if err != nil {
+		log.Println(err)
+		_, _ = fmt.Fprintf(res, "Unable to load template")
+		return
+	}
+
+	// add data to template and send response.
+	err = t.Execute(res, result)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func processPostRequest(res http.ResponseWriter, req *http.Request) {
+
+	// create url to send data to hbase
+	now := time.Now()
+	timestamp := uint64(now.Unix())
+	newRowAddress := hBaseLibraryTable + "/" + strconv.FormatUint(timestamp, 10)
+
+	var rowData RowsType
+
+	// assuming that correct data is sent in request convert it to RowsType
+	err := json.NewDecoder(req.Body).Decode(&rowData)
+	if err != nil {
+		log.Println(err)
+		res.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	// encode the values to base64 for sending to hbase
+	encodedRowData := rowData.encode()
+
+	// Marshal the data to json
+	requestBody, err := json.Marshal(encodedRowData)
+	if err != nil {
+		log.Println(err)
+		res.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	// create post request to hbase instance for storing this data.
+	request, err := http.NewRequest("PUT", newRowAddress, bytes.NewBuffer(requestBody))
+	if err != nil {
+		log.Println(err)
+		res.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/json")
+
+	// send request to hbase
+	response, err := netClient.Do(request)
+
+	if err != nil {
+		log.Println(err)
+		res.WriteHeader(http.StatusInternalServerError)
+		return
+	} else {
+		log.Println("hbase put data result: ", response.Status, response.StatusCode)
+		res.WriteHeader(http.StatusCreated)
+	}
+
 }
 
 // connectWithOptions will try to connect with zookeeper instance.
