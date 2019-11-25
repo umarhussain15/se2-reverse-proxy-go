@@ -31,6 +31,9 @@ COPY --from=builder /temp/templates /templates
 # default value if not provided during run
 ENV ID "gserve_default"
 
+# default port to use if not provided during run time
+ENV PORT "80"
+
 # provide tempalte folder path since go will use absolute path to parse.
 ENV TEMPLATE_FOLDER "/templates"
 
