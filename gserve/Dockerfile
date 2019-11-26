@@ -33,6 +33,8 @@ ENV ID "gserve_default"
 
 # default port to use if not provided during run time
 ENV PORT "80"
+ENV ZOOKEEPER_HOST "zookeeper"
+ENV HBASE_HOST "hbase:8080"
 
 # provide tempalte folder path since go will use absolute path to parse.
 ENV TEMPLATE_FOLDER "/templates"

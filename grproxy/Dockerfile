@@ -23,6 +23,8 @@ COPY --from=builder /go/bin/grproxy /go/bin/grproxy
 
 # default port to use if not provided during run time
 ENV PORT "80"
+ENV STATIC_CONTENT_HOST "nginx"
+ENV ZOOKEEPER_HOST "zookeeper"
 
 EXPOSE $PORT
 # set executable as entry point during container startup.
