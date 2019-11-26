@@ -1,54 +1,55 @@
 version: '2'
 services:
-        nginx:
-          build: nginx
-          volumes:
-            - ./nginx/www:/var/www/nginx
-          networks:
-            - se_backend
-#          ports:
-#            - "80:80"
-        grproxy:
-          build: grproxy
-          environment:
-            PORT: "8080"
-            STATIC_CONTENT_HOST: "nginx"
-            ZOOKEEPER_HOST: "zookeeper"
-          networks:
-            - se_frontend
-            - se_backend
-          ports:
-            - "80:8080"
-        hbase:
-          build: hbase
-          networks:
-            se_backend:
-              aliases:
-                - zookeeper
-        gserve1:
-          build: gserve
-          environment:
-            - ID=gserve1
-            - PORT=80
-            - HBASE_HOST=hbase:8080
-            - ZOOKEEPER_HOST=zookeeper
-          networks:
-            - se_backend
-          depends_on:
-            - hbase
-            - grproxy
-        gserve2:
-          build: gserve
-          environment:
-            - ID=gserve2
-            - PORT=80
-            - HBASE_HOST=hbase:8080
-            - ZOOKEEPER_HOST=zookeeper
-          networks:
-            - se_backend
-          depends_on:
-            - hbase
-            - grproxy
+  nginx:
+    build: nginx
+    volumes:
+      - ./nginx/www:/var/www/nginx
+    networks:
+      - se_backend
+  grproxy:
+    build: grproxy
+    environment:
+      PORT: "80"
+      STATIC_CONTENT_HOST: "nginx"
+      ZOOKEEPER_HOST: "zookeeper"
+    networks:
+      - se_frontend
+      - se_backend
+    ports:
+      - "80:80"
+    depends_on:
+      - hbase
+      - nginx
+  hbase:
+    build: hbase
+    networks:
+      se_backend:
+        aliases:
+          - zookeeper
+  gserve1:
+    build: gserve
+    environment:
+      ID: "gserve1"
+      PORT: "80"
+      HBASE_HOST: "hbase:8080"
+      ZOOKEEPER_HOST: "zookeeper"
+    networks:
+      - se_backend
+    depends_on:
+      - hbase
+      - grproxy
+  gserve2:
+    build: gserve
+    environment:
+      ID: "gserve2"
+      PORT: "80"
+      HBASE_HOST: "hbase:8080"
+      ZOOKEEPER_HOST: "zookeeper"
+    networks:
+      - se_backend
+    depends_on:
+      - hbase
+      - grproxy
 networks:
   se_backend:
     driver: bridge
