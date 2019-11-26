@@ -20,13 +20,14 @@ var netClient = http.Client{
 }
 
 // Initialize details for gserve host, zookeeper and hbase.
-var serverId = os.Getenv("ID")
-var port = os.Getenv("PORT")
+var serverListenAddress string
+var serverId string
+var port string
 
-var zooKeeperHost = os.Getenv("ZOOKEEPER_HOST")
+var zooKeeperHost string
+var hBaseClientAddress string
+var hBaseLibraryTable string
 var zooKeeperWatchNode = "/gserve"
-var hBaseClientAddress = "http://" + os.Getenv("HBASE_HOST")
-var hBaseLibraryTable = hBaseClientAddress + "/se2:library"
 
 // struct to hold data for html template, used in get response.
 type GetResponse struct {
@@ -266,14 +267,45 @@ func publishServerDetails(conn *zk.Conn, myUrl string) {
 
 }
 
-// serverAddress reads environment for port on which proxy server be listening.
-// It returns address string with no host name and port from env.
-func serverAddress() string {
-	return ":" + port
+// getEnvironment tries to read environment otherwise sets default values.
+func getEnvironment() {
+	envVal, present := os.LookupEnv("ZOOKEEPER_HOST")
+	if present {
+		zooKeeperHost = envVal
+	} else {
+		zooKeeperHost = "zookeeper"
+	}
+
+	envVal, present = os.LookupEnv("ID")
+	if present {
+		serverId = envVal
+	} else {
+		serverId = "gserve"
+	}
+
+	envVal, present = os.LookupEnv("PORT")
+	if present {
+		port = envVal
+		serverListenAddress = ":" + envVal
+	} else {
+		port = "80"
+		serverListenAddress = ":80"
+	}
+
+	envVal, present = os.LookupEnv("HBASE_HOST")
+	if present {
+		hBaseClientAddress = "http://" + envVal
+		hBaseLibraryTable = hBaseClientAddress + "/se2:library"
+	} else {
+		hBaseClientAddress = "http://hbase:8080"
+		hBaseLibraryTable = hBaseClientAddress + "/se2:library"
+	}
 }
 
 func main() {
 	log.Printf("Starting gserve instance: %s ...", serverId)
+
+	getEnvironment()
 
 	// prepare url for this instance and publish it.
 	myUrl := "http://" + serverId + ":" + port
@@ -285,7 +317,7 @@ func main() {
 	http.HandleFunc("/", handleRequests)
 
 	// start http server
-	if err := http.ListenAndServe(serverAddress(), nil); err != nil {
+	if err := http.ListenAndServe(serverListenAddress, nil); err != nil {
 		panic(err)
 	}
 }
