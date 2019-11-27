@@ -207,7 +207,7 @@ func processPostRequest(res http.ResponseWriter, req *http.Request) {
 		return
 	} else {
 		log.Println("hbase put data result: ", response.Status, response.StatusCode)
-		res.WriteHeader(http.StatusCreated)
+		res.WriteHeader(http.StatusAccepted)
 	}
 
 }
