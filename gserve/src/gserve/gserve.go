@@ -74,7 +74,7 @@ func processGetRequest(res http.ResponseWriter, req *http.Request) {
 
 	// create scanner for the library table
 	scannerAddress := hBaseLibraryTable + "/scanner"
-	request, err := http.NewRequest("PUT", scannerAddress, bytes.NewBuffer([]byte(`<Scanner maxVersions="1"/>`)))
+	request, err := http.NewRequest("PUT", scannerAddress, bytes.NewBuffer([]byte(`<Scanner batch="50"/>`)))
 	if err != nil {
 		log.Println("error creating scanner request", err)
 	}
