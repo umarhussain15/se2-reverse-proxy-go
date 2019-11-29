@@ -215,7 +215,7 @@ func processPostRequest(res http.ResponseWriter, req *http.Request) {
 // connectWithOptions will try to connect with zookeeper instance.
 func connectWithOptions() (*zk.Conn, <-chan zk.Event) {
 	log.Print("establishing connection to zookeeper with options")
-	conn, events, err := zk.Connect([]string{zooKeeperHost}, time.Second*20)
+	conn, events, err := zk.Connect([]string{zooKeeperHost}, time.Millisecond*50)
 	if err != nil {
 		panic(err)
 	}
