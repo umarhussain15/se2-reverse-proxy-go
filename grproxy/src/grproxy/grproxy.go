@@ -42,7 +42,7 @@ func dynamicContentProxy(res http.ResponseWriter, req *http.Request) {
 	if len(gServeAddresses) != 0 {
 		wg.Wait()
 		wg.Add(1)
-		if currentServerIndex+1 == len(gServeAddresses) {
+		if currentServerIndex+1 >= len(gServeAddresses) {
 			currentServerIndex = 0
 		} else {
 			currentServerIndex++
