@@ -34,8 +34,7 @@ RUN \
     tar zxf hbase-$HBASE_VERSION-bin.tar.gz -C hbase-$HBASE_VERSION --strip 1 && \
     ln -sv hbase-$HBASE_VERSION hbase && \
     rm -fv hbase-$HBASE_VERSION-bin.tar.gz && \
-    { rm -rf hbase/{docs,src}; : ; } && \
-    apk del wget tar
+    { rm -rf hbase/{docs,src}; : ; }
 
 COPY entrypoint.sh /
 RUN chmod +x entrypoint.sh

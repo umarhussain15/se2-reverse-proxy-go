@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 services:
   nginx:
     build: nginx
@@ -18,14 +18,20 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - hbase
-      - nginx
+      hbase:
+        condition: service_healthy
+      nginx:
+        condition: service_started
   hbase:
     build: hbase
     networks:
       se_backend:
         aliases:
           - zookeeper
+    healthcheck:
+      test: wget -q http://localhost:8080/ || exit 1
+      retries: 4
+      interval: 300ms
   gserve1:
     build: gserve
     environment:
@@ -36,8 +42,10 @@ services:
     networks:
       - se_backend
     depends_on:
-      - hbase
-      - grproxy
+      hbase:
+        condition: service_healthy
+      grproxy:
+        condition: service_started
   gserve2:
     build: gserve
     environment:
@@ -48,8 +56,10 @@ services:
     networks:
       - se_backend
     depends_on:
-      - hbase
-      - grproxy
+      hbase:
+        condition: service_healthy
+      grproxy:
+        condition: service_started
 networks:
   se_backend:
     driver: bridge
